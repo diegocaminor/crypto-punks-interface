@@ -13,21 +13,12 @@ import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import NavLink from "./nav-link";
 import Footer from "./footer";
 import WalletData from "./wallet-data";
-
 const Links = [
-  {
-    name: "Home",
-    to: "/",
-  },
-  {
-    name: "Punks",
-    to: "/punks",
-  },
+  { name: "Home", to: "/" },
+  { name: "Punks", to: "/punks" },
 ];
-
 const MainLayout = ({ children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-
   return (
     <Flex minH="100vh" direction="column">
       <Box
@@ -77,7 +68,6 @@ const MainLayout = ({ children }) => {
           </HStack>
           <WalletData />
         </Flex>
-
         {isOpen ? (
           <Box pb={4} display={{ md: "none" }}>
             <Stack as={"nav"} spacing={4}>
@@ -97,5 +87,4 @@ const MainLayout = ({ children }) => {
     </Flex>
   );
 };
-
 export default MainLayout;

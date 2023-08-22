@@ -1,3 +1,4 @@
+import { useWeb3React } from "@web3-react/core";
 import { useCallback, useEffect, useState } from "react";
 import useCryptoPunks from "../useCryptoPunks";
 
@@ -67,8 +68,9 @@ const getPunkData = async ({ cryptoPunks, tokenId }) => {
 };
 
 // Plural
-const useCryptoPunksData = () => {
+const useCryptoPunksData = ({ owner = null } = {}) => {
   const [punks, setPunks] = useState([]);
+  const { library } = useWeb3React();
   const [loading, setLoading] = useState(true);
   const cryptoPunks = useCryptoPunks();
 
@@ -78,19 +80,32 @@ const useCryptoPunksData = () => {
 
       let tokenIds;
 
-      const totalSupply = await cryptoPunks.methods.totalSupply().call();
-      tokenIds = new Array(Number(totalSupply)).fill().map((_, index) => index);
+      if (!library.utils.isAddress(owner)) {
+        const totalSupply = await cryptoPunks.methods.totalSupply().call();
+        tokenIds = new Array(Number(totalSupply))
+          .fill()
+          .map((_, index) => index);
+      } else {
+        const balanceOf = await cryptoPunks.methods.balanceOf(owner).call();
+
+        const tokenIdsOfOwner = new Array(Number(balanceOf))
+          .fill()
+          .map((_, index) =>
+            cryptoPunks.methods.tokenOfOwnerByIndex(owner, index).call()
+          );
+
+        tokenIds = await Promise.all(tokenIdsOfOwner);
+      }
 
       const punksPromise = tokenIds.map((tokenId) =>
         getPunkData({ tokenId, cryptoPunks })
       );
 
       const punks = await Promise.all(punksPromise);
-
       setPunks(punks);
       setLoading(false);
     }
-  }, [cryptoPunks]);
+  }, [cryptoPunks, owner, library?.utils]);
 
   useEffect(() => {
     update();

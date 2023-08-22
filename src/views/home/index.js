@@ -16,14 +16,17 @@ const Home = () => {
   const [imageSrc, setImageSrc] = useState("");
   const { active, account } = useWeb3React();
   const cryptoPunks = useCryptoPunks();
+  const [availablePunks, setAvailablePunks] = useState("");
 
   const getCryptoPunksData = useCallback(async () => {
     if (cryptoPunks) {
       const totalSupply = await cryptoPunks.methods.totalSupply().call();
+      const maxSupply = await cryptoPunks.methods.maxSupply().call();
       const dnaPreview = await cryptoPunks.methods
         .deterministicPseudoRandomDNA(totalSupply, account)
         .call();
       const image = await cryptoPunks.methods.imageByDNA(dnaPreview).call();
+      setAvailablePunks(maxSupply - totalSupply);
       setImageSrc(image);
     }
   }, [cryptoPunks, account]);
@@ -124,6 +127,9 @@ const Home = () => {
                 </Badge>
               </Badge>
             </Flex>
+            <Text color={"green.600"}>
+              Punks disponibles : {availablePunks}
+            </Text>
             <Button
               onClick={getCryptoPunksData}
               mt={4}

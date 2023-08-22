@@ -103,9 +103,31 @@ const useCryptoPunksData = () => {
   };
 };
 
-// Singular
-// const usePlatziPunkData = () => {
+// Singular;
+const useCryptoPunkData = (tokenId = null) => {
+  const [punk, setPunk] = useState({});
+  const [loading, setLoading] = useState(true);
+  const cryptoPunks = useCryptoPunks();
 
-// }
+  const update = useCallback(async () => {
+    if (cryptoPunks && tokenId != null) {
+      setLoading(true);
+      const toSet = await getPunkData({ tokenId, cryptoPunks });
+      setPunk(toSet);
 
-export { useCryptoPunksData };
+      setLoading(false);
+    }
+  }, [cryptoPunks, tokenId]);
+
+  useEffect(() => {
+    update();
+  }, [update]);
+
+  return {
+    loading,
+    punk,
+    update,
+  };
+};
+
+export { useCryptoPunksData, useCryptoPunkData };

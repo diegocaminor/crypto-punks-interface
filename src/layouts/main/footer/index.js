@@ -28,8 +28,8 @@ const Footer = () => {
         >
           <Text>
             ©{new Date().getFullYear()}Original designs by
-            <Link ml={1} href="https://twitter.com/pablostanley">
-              Pablo Stanley🎨
+            <Link ml={1} href="caminocondiego">
+              Diego Camino 🎨
             </Link>
           </Text>
         </Container>

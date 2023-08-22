@@ -2,10 +2,13 @@ import { useCallback, useEffect, useState } from "react";
 import useCryptoPunks from "../useCryptoPunks";
 
 const getPunkData = async ({ cryptoPunks, tokenId }) => {
+  const [tokenURI, dna, owner] = await Promise.all([
+    cryptoPunks.methods.tokenURI(tokenId).call(),
+    cryptoPunks.methods.tokenDNA(tokenId).call(),
+    cryptoPunks.methods.ownerOf(tokenId).call(),
+  ]);
+
   const [
-    tokenURI,
-    dna,
-    owner,
     accessoriesType,
     clotheColor,
     clotheType,
@@ -20,23 +23,20 @@ const getPunkData = async ({ cryptoPunks, tokenId }) => {
     skinColor,
     topType,
   ] = await Promise.all([
-    cryptoPunks.methods.tokenURI(tokenId).call(),
-    cryptoPunks.methods.tokenDNA(tokenId).call(),
-    cryptoPunks.methods.ownerOf(tokenId).call(),
-    cryptoPunks.methods.getAccessoriesType(tokenId).call(),
-    cryptoPunks.methods.getAccessoriesType(tokenId).call(),
-    cryptoPunks.methods.getClotheColor(tokenId).call(),
-    cryptoPunks.methods.getClotheType(tokenId).call(),
-    cryptoPunks.methods.getEyeType(tokenId).call(),
-    cryptoPunks.methods.getEyeBrowType(tokenId).call(),
-    cryptoPunks.methods.getFacialHairColor(tokenId).call(),
-    cryptoPunks.methods.getFacialHairType(tokenId).call(),
-    cryptoPunks.methods.getHairColor(tokenId).call(),
-    cryptoPunks.methods.getHatColor(tokenId).call(),
-    cryptoPunks.methods.getGraphicType(tokenId).call(),
-    cryptoPunks.methods.getMouthType(tokenId).call(),
-    cryptoPunks.methods.getSkinColor(tokenId).call(),
-    cryptoPunks.methods.getTopType(tokenId).call(),
+    cryptoPunks.methods.getAccessoriesType(dna).call(),
+    cryptoPunks.methods.getAccessoriesType(dna).call(),
+    cryptoPunks.methods.getClotheColor(dna).call(),
+    cryptoPunks.methods.getClotheType(dna).call(),
+    cryptoPunks.methods.getEyeType(dna).call(),
+    cryptoPunks.methods.getEyeBrowType(dna).call(),
+    cryptoPunks.methods.getFacialHairColor(dna).call(),
+    cryptoPunks.methods.getFacialHairType(dna).call(),
+    cryptoPunks.methods.getHairColor(dna).call(),
+    cryptoPunks.methods.getHatColor(dna).call(),
+    cryptoPunks.methods.getGraphicType(dna).call(),
+    cryptoPunks.methods.getMouthType(dna).call(),
+    cryptoPunks.methods.getSkinColor(dna).call(),
+    cryptoPunks.methods.getTopType(dna).call(),
   ]);
 
   const responseMetadata = await fetch(tokenURI);

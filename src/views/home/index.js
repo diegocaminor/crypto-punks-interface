@@ -6,6 +6,7 @@ import {
   Button,
   Image,
   Badge,
+  useToast,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useWeb3React } from "@web3-react/core";
@@ -13,10 +14,12 @@ import useCryptoPunks from "../../hooks/useCryptoPunks";
 import { useCallback, useEffect, useState } from "react";
 
 const Home = () => {
+  const [isMinting, setIsMinting] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
   const { active, account } = useWeb3React();
   const cryptoPunks = useCryptoPunks();
   const [availablePunks, setAvailablePunks] = useState("");
+  const toast = useToast();
 
   const getCryptoPunksData = useCallback(async () => {
     if (cryptoPunks) {
@@ -34,6 +37,39 @@ const Home = () => {
   useEffect(() => {
     getCryptoPunksData();
   }, [getCryptoPunksData]);
+
+  const mint = () => {
+    setIsMinting(true);
+
+    cryptoPunks.methods
+      .mint()
+      .send({
+        from: account,
+      })
+      .on("transactionHash", (txHash) => {
+        toast({
+          title: "Transacción enviada",
+          description: txHash,
+          status: "info",
+        });
+      })
+      .on("receipt", () => {
+        setIsMinting(false);
+        toast({
+          title: "Transacción confirmada",
+          description: "Nunca pares de aprender.",
+          status: "success",
+        });
+      })
+      .on("error", (error) => {
+        setIsMinting(false);
+        toast({
+          title: "Transacción fallida",
+          description: error.message,
+          status: "error",
+        });
+      });
+  };
 
   return (
     <Stack
@@ -92,6 +128,8 @@ const Home = () => {
             bg={"green.400"}
             _hover={{ bg: "green.500" }}
             disabled={!cryptoPunks}
+            onClick={mint}
+            isLoading={isMinting}
           >
             Obtén tu punk
           </Button>
